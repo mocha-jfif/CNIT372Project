@@ -5,12 +5,10 @@ Hi there! Here's our basic to-do. This will be updated as we get through the sem
 
 
 # To-Do
-```
-Milestone 1 [Sept. 17th]:
-  > Choose data set, record insights
-  > ERD / Table structure
-  > Contribution chart establishment
-```
+~~Milestone 1 [Sept. 17th]:~~
+  ~~> Choose data set, record insights~~
+ ~~> ERD / Table structure~~
+
 
 ```
 Milestone 2 []:
