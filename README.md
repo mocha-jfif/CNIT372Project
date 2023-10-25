@@ -10,15 +10,15 @@ Hi there! Here's our basic to-do. This will be updated as we get through the sem
  ~~> ERD / Table structure~~
 
 
-```
-Milestone 2 []:
-  > 10 questions to answer
-    > Explanation for each
-  > Contribution recording
-```
+
+~~Milestone 2 []:~~
+ ~~> 10 questions to answer~~
+    ~~> Explanation for each~~
+  ~~> Contribution recording~~
+
 
 ```
-Milestone 3 []:
+Milestone 3 [Nov 5]:
   > Provide this repo
   > Make sure all scripts are committed
 ```
