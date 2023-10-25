@@ -12,15 +12,15 @@
 
 >This is an important comparison tool in order to determine if video length does contribute to success. Comparing the influencers based on the number of subscribers or views they have provides an indicator of whether video length contributes directly to success or not. This also is a basic SQL query, by selecting the names of the channels with the maximum subscriber count and the minimum subscriber count. 
 
-**Find the average viewer count, number of likes, and number of comments on short videos (less than 2 minutes) and long videos (more than 10 minutes). **
+**Find the average viewer count, number of likes, and number of comments on short videos (less than 2 minutes) and long videos (more than 10 minutes).**
 
 >This helps determine how well short-form content does on YouTube. This can help content creators find out what kind of content will garner more views and interactions, and therefore help their channel grow more. Short-form content has become exceedingly popular thanks to new social media trends, such as TikTok and Instagram. Long-form content has historically been more popular than short-form, and longer videos generally provide more information on any given topic. We plan to use subqueries to get a list of all short and long videos, and then get average values from those lists. 
 
-**Find the average subscriber count for content creators who primarily make short videos (less than 2 minutes) and long videos (more than 10 minutes). **
+**Find the average subscriber count for content creators who primarily make short videos (less than 2 minutes) and long videos (more than 10 minutes).**
 
 >This helps us learn how much the average viewer in interested in a specific creator’s short-form content. Modern social media usually offers content from an extremely wide range of creators in a feed that plays short videos one after another, so viewers are constantly exposed to different creators and subjects. Content creators who make longer videos typically focus on a few specific topics of interest, and their content is based on those topics. We can use PL/SQL to loop through all videos made by specific content creators and calculate their average subscriber counts. 
 
-**Find the channel creation date for influencers who primarily make short videos and for those who primarily make long videos. **
+**Find the channel creation date for influencers who primarily make short videos and for those who primarily make long videos.**
 
 >This helps us learn how the period of when a channel was created can influence the content they create. Short videos and hashtags are relatively newer concepts on YouTube compared to long videos, comments, and likes, so it is possible that older channels can achieve their success without adding shorts or hashtags as they have loyal subscribers who have always liked their long videos. This would be an SQL query which would select and display the creation dates of the channels and what form of videos they post mostly.  
 
@@ -36,7 +36,7 @@
 
 >This question will show which content is more desirable by consumers on the platform based on the length of the content itself. We will see whether long form content is still being appreciated and paid attention to, or that short form content is simply more consumable and preferred. This will provide interesting insights into the percentage of videos are being watched and fully consumed. We will use PL/SQL to calculate the total watch time of all viewers on various short and long videos. 
 
-**Find the average video length of a video with more than 500,000 views, and the average video length of a video with less than that. **
+**Find the average video length of a video with more than 500,000 views, and the average video length of a video with less than that.**
 
 >This question can give an idea on which video length is more likely to be successful in terms of view count. YouTube shorts are 60 seconds or less, so if the average video length is shorter than that it will imply that short videos are more likely to be popular. This would be an SQL query where the average video length would be calculated for videos that have over 500000 views. 
 
