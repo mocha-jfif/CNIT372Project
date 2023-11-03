@@ -9,6 +9,7 @@ DROP TABLE GP_Interactions;
 -- Create tables.
 CREATE TABLE GP_Videos (
     Video_Title VARCHAR2(256) NOT NULL,
+    Total_Views NUMBER,
     Duration_Time TIMESTAMP,
     Duration_Seconds NUMBER,
     Date_Uploaded DATE,
@@ -127,9 +128,78 @@ end;
 
 -- Question 2
 
--- Question 3 [Sean]
+-- Question 3
 
--- Question 4
+-- Question 4 [Sean]
+
+CREATE OR REPLACE PROCEDURE Get_Average_Subscribers (p_comparison IN VARCHAR2, p_duration IN NUMBER)
+AS
+    -- Define variables.
+    v_total_subscribers NUMBER := 0;
+    v_total_creators NUMBER := 0;
+    v_average_subscribers NUMBER;
+    
+    -- Define cursors.
+    CURSOR c_creators_greater IS
+        SELECT GP_Influencers.Creator_Name, GP_Influencers.Total_Subscribers
+        FROM GP_Influencers INNER JOIN GP_Videos
+            ON GP_Influencers.Video_Title = GP_Videos.Video_Title
+        WHERE Duration_Seconds >= p_duration;
+    
+    CURSOR c_creators_less IS
+        SELECT GP_Influencers.Creator_Name, GP_Influencers.Total_Subscribers
+        FROM GP_Influencers INNER JOIN GP_Videos
+            ON GP_Influencers.Video_Title = GP_Videos.Video_Title
+        WHERE Duration_Seconds <= p_duration;
+BEGIN
+    -- Loop through c_creators_greater if the user specifies the "greater" comparison.
+    IF LOWER(p_comparison) = 'greater' THEN
+        FOR creator IN c_creators_greater LOOP
+            -- Add the current creator's subscribers to the total and increment the amount of subscribers taken into consideration thus far.
+            v_total_subscribers := v_total_subscribers + creator.Total_Subscribers;
+            v_total_creators := v_total_creators + 1;
+        END LOOP;
+        
+        -- Check if the cursor was empty.
+        IF v_total_creators != 0 THEN
+            -- Calculate and print the average number of subscribers.
+            v_average_subscribers := v_total_subscribers / v_total_creators;
+    
+            DBMS_OUTPUT.PUT_LINE('Influencers with average video durations of ' || p_duration || ' or greater have ' || v_average_subscribers || ' subscribers on average.');
+        ELSE
+            -- Print an error if the cursor was empty.
+            DBMS_OUTPUT.PUT_LINE('ERROR: There are no influencers with videos that match the given criteria.');
+        END IF;
+    -- Loop through c_creators_less if the user specifies the "less" comparison.
+    ELSIF LOWER(p_comparison) = 'less' THEN
+        FOR creator IN c_creators_greater LOOP
+            -- Add the current creator's subscribers to the total and increment the amount of subscribers taken into consideration thus far.
+            v_total_subscribers := v_total_subscribers + creator.Total_Subscribers;
+            v_total_creators := v_total_creators + 1;
+        END LOOP;
+        
+        -- Check if the cursor was empty.
+        IF v_total_creators != 0 THEN
+            -- Calculate and print the average number of subscribers.
+            v_average_subscribers := v_total_subscribers / v_total_creators;
+            
+            DBMS_OUTPUT.PUT_LINE('Influencers with average video durations of ' || p_duration || ' or less have ' || v_average_subscribers || ' subscribers on average.');
+        ELSE
+            -- Print an error if the cursor was empty.
+            DBMS_OUTPUT.PUT_LINE('ERROR: There are no influencers with videos that match the given criteria.');
+        END IF;
+    -- Print an error message if the comparison argument is not recognized.
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('ERROR: Comparison argument not recognized. Please enter "greater" or "less" as the comparison argument.');
+    END IF;
+END Get_Average_Subscribers;
+/
+
+BEGIN
+    Get_Average_Subscribers('greater', 10);
+    Get_Average_Subscribers('less', 2);
+END;
+/
 
 -- Question 5 [Natsu]
 
