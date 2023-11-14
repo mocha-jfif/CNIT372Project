@@ -29,6 +29,7 @@ CREATE TABLE GP_Influencers (
     Total_Views NUMBER,
     Total_Videos NUMBER,
     Total_Playlists NUMBER,
+    Channel_Created DATE,
     
     PRIMARY KEY (Video_Title)
 );
@@ -201,7 +202,7 @@ BEGIN
 END;
 /
 
--- Question 5 [Natsu]
+-- Question 5 
 
 -- Question 6
 
@@ -211,4 +212,44 @@ END;
 
 -- Question 9
 
--- Question 10
+-- Question 10 [Natsu]
+
+create or replace procedure count_hashtags 
+is
+
+begin
+      DBMS_OUTPUT.PUT_LINE('Videos with over 500,000 views');
+      DBMS_OUTPUT.PUT_LINE('-------------------------------');
+      FOR vid IN (
+      SELECT
+         video_title, total_views, total_hashtags
+      FROM (
+        SELECT
+            video_title, total_views, total_hashtags
+        FROM gp_videos
+        where total_views >= 500000
+      ) subquery
+   ) 
+   LOOP
+      DBMS_OUTPUT.PUT_LINE('Video title: ' || vid.video_title || ' Number of views: ' || vid.total_views
+      || ' Total Hashtags: ' || vid.total_hashtags);
+   END LOOP;
+   
+   DBMS_OUTPUT.PUT_LINE(' ');
+   DBMS_OUTPUT.PUT_LINE('Videos with under 500,000 views');
+   DBMS_OUTPUT.PUT_LINE('-------------------------------');
+   FOR vid IN (
+      SELECT
+         video_title, total_views, total_hashtags
+      FROM (
+        SELECT
+            video_title, total_views, total_hashtags
+        FROM gp_videos
+        where total_views < 500000
+      ) subquery
+   ) 
+   LOOP
+      DBMS_OUTPUT.PUT_LINE('Video title: ' || vid.video_title || ' Number of views: ' || vid.total_views
+      || ' Total Hashtags: ' || vid.total_hashtags);
+   END LOOP;
+end;
