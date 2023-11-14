@@ -163,16 +163,16 @@ BEGIN
         -- Check if the cursor was empty.
         IF v_total_creators != 0 THEN
             -- Calculate and print the average number of subscribers.
-            v_average_subscribers := v_total_subscribers / v_total_creators;
+            v_average_subscribers := ROUND((v_total_subscribers / v_total_creators), 0);
     
-            DBMS_OUTPUT.PUT_LINE('Influencers with average video durations of ' || p_duration || ' or greater have ' || v_average_subscribers || ' subscribers on average.');
+            DBMS_OUTPUT.PUT_LINE('Influencers with average video durations of ' || p_duration || ' seconds or greater have ' || v_average_subscribers || ' subscribers on average.');
         ELSE
             -- Print an error if the cursor was empty.
             DBMS_OUTPUT.PUT_LINE('ERROR: There are no influencers with videos that match the given criteria.');
         END IF;
     -- Loop through c_creators_less if the user specifies the "less" comparison.
     ELSIF LOWER(p_comparison) = 'less' THEN
-        FOR creator IN c_creators_greater LOOP
+        FOR creator IN c_creators_less LOOP
             -- Add the current creator's subscribers to the total and increment the amount of subscribers taken into consideration thus far.
             v_total_subscribers := v_total_subscribers + creator.Total_Subscribers;
             v_total_creators := v_total_creators + 1;
@@ -181,9 +181,9 @@ BEGIN
         -- Check if the cursor was empty.
         IF v_total_creators != 0 THEN
             -- Calculate and print the average number of subscribers.
-            v_average_subscribers := v_total_subscribers / v_total_creators;
+            v_average_subscribers := ROUND((v_total_subscribers / v_total_creators), 0);
             
-            DBMS_OUTPUT.PUT_LINE('Influencers with average video durations of ' || p_duration || ' or less have ' || v_average_subscribers || ' subscribers on average.');
+            DBMS_OUTPUT.PUT_LINE('Influencers with average video durations of ' || p_duration || ' seconds or less have ' || v_average_subscribers || ' subscribers on average.');
         ELSE
             -- Print an error if the cursor was empty.
             DBMS_OUTPUT.PUT_LINE('ERROR: There are no influencers with videos that match the given criteria.');
@@ -196,8 +196,8 @@ END Get_Average_Subscribers;
 /
 
 BEGIN
-    Get_Average_Subscribers('greater', 10);
-    Get_Average_Subscribers('less', 2);
+    Get_Average_Subscribers('greater', 600);
+    Get_Average_Subscribers('less', 120);
 END;
 /
 
