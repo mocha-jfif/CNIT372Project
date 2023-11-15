@@ -1,6 +1,6 @@
 
 
-**What is our goal**
+**What is our goal?**
 > Our goal is to determine how successful a content creator on YouTube is based on metrics such as their subscriber count and view count in relation to the average video length they produce. This data can be analyzed to see how much any one factor affects the success of a creator, and if there are any combinations of factors that correlate to the success of a channel. 
 
 
