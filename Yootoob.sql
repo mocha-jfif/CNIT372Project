@@ -208,35 +208,73 @@ END;
 
 -- Question 7 [Collin]
     
-WITH RankedChannels AS (
-    SELECT
-        GI.Video_Title,
-        GI.Creator_Name,
-        GI.Creator_Gender,
-        GI.Total_Subscribers,
-        GI.Channel_Created,
-        GV.Duration_Seconds,
-        ROW_NUMBER() OVER (PARTITION BY GI.Video_Title ORDER BY GI.Channel_Created DESC) AS RowNum
-    FROM
-        GP_Influencers GI
-    JOIN GP_Videos GV ON GI.Video_Title = GV.Video_Title
-    WHERE
-        GI.Total_Subscribers > 100000
-)
-SELECT
-    Video_Title,
-    Creator_Name,
-    Creator_Gender,
-    Total_Subscribers,
-    AVG(Duration_Seconds) AS AvgVideoLength
-FROM
-    RankedChannels
-WHERE
-    RowNum = 1
-GROUP BY
-    Video_Title, Creator_Name, Creator_Gender, Total_Subscribers;
+CREATE OR REPLACE PROCEDURE FindNewChannelsWithSubscribers
+AS
+BEGIN
+    FOR ChannelInfo IN (
+        SELECT
+            GI.Creator_Name,
+            GI.Total_Subscribers,
+            AVG(GV.Duration_Seconds) AS AvgVideoLength
+        FROM
+            GP_Influencers GI
+        JOIN GP_Videos GV ON GI.Video_Title = GV.Video_Title
+        WHERE
+            GI.Total_Subscribers > 100000
+            AND ROW_NUMBER() OVER (PARTITION BY GI.Video_Title ORDER BY GI.Channel_Created DESC) = 1
+        GROUP BY
+            GI.Creator_Name, GI.Total_Subscribers
+    )
+    LOOP
+        DBMS_OUTPUT.PUT_LINE('Creator Name: ' || ChannelInfo.Creator_Name);
+        DBMS_OUTPUT.PUT_LINE('Total Subscribers: ' || ChannelInfo.Total_Subscribers);
+        DBMS_OUTPUT.PUT_LINE('Average Video Length: ' || ChannelInfo.AvgVideoLength);
+        DBMS_OUTPUT.PUT_LINE('-----------------------');
+    END LOOP;
+END FindNewChannelsWithSubscribers;
+/
 
 -- Question 8 [Collin]
+
+CREATE OR REPLACE PROCEDURE CalculateTotalViewsByDuration
+AS
+    vShortFormViews NUMBER := 0;
+    vLongFormViews NUMBER := 0;
+BEGIN
+
+    SELECT
+        NVL(SUM(GV.Total_Views), 0)
+    INTO
+        vShortFormViews
+    FROM
+        GP_Videos GV
+    WHERE
+        GV.Duration_Seconds < 120;
+
+
+    SELECT
+        NVL(SUM(GV.Total_Views), 0)
+    INTO
+        vLongFormViews
+    FROM
+        GP_Videos GV
+    WHERE
+        GV.Duration_Seconds > 600;
+
+
+    DBMS_OUTPUT.PUT_LINE('Total Views for Short Form Content: ' || vShortFormViews);
+    DBMS_OUTPUT.PUT_LINE('Total Views for Long Form Content: ' || vLongFormViews);
+
+
+    IF vShortFormViews > vLongFormViews THEN
+        DBMS_OUTPUT.PUT_LINE('Short Form Content has a higher total number of views.');
+    ELSEIF vLongFormViews > vShortFormViews THEN
+        DBMS_OUTPUT.PUT_LINE('Long Form Content has a higher total number of views.');
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('Short Form and Long Form Content have the same total number of views.');
+    END IF;
+END CalculateTotalViewsByDuration;
+/
 
 -- Question 9
 
