@@ -32,9 +32,9 @@
 
 >How do the trends in video length affect the success of newer content creators? The question attempts to answer that and provide evidence for a trend in popularity of certain lengths of content and their popularity. It will be interesting to see which forms of content newer creators are favoring to grow their popularity. We will use an SQL query to find the newest channels in the dataset and then subsequently identify their video length data. 
 
-**Find the total watch time that creators have achieved when creating long and short form content (less than two minutes vs greater than 10 minutes). Which group is cultivating a higher total watch time?**
+**Find the total views that creators have achieved when creating long and short form content (less than two minutes vs greater than 10 minutes). Which group is cultivating a higher total number of views?**
 
->This question will show which content is more desirable by consumers on the platform based on the length of the content itself. We will see whether long form content is still being appreciated and paid attention to, or that short form content is simply more consumable and preferred. This will provide interesting insights into the percentage of videos are being watched and fully consumed. We will use PL/SQL to calculate the total watch time of all viewers on various short and long videos. 
+>This question will show which content is more desirable by consumers on the platform based on the length of the content itself. We will see whether long form content is still being appreciated and paid attention to, or that short form content is simply more consumable and preferred. This will provide interesting insights into the types of videos that are both sought out by consumers and pushed by YouTube's recommendation algorithms. We will use PL/SQL to calculate the total views on various short and long videos. 
 
 **Find the average video length of a video with more than 500,000 views, and the average video length of a video with less than that.**
 
