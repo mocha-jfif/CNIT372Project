@@ -207,6 +207,34 @@ END;
 -- Question 6
 
 -- Question 7 [Collin]
+    
+WITH RankedChannels AS (
+    SELECT
+        GI.Video_Title,
+        GI.Creator_Name,
+        GI.Creator_Gender,
+        GI.Total_Subscribers,
+        GI.Channel_Created,
+        GV.Duration_Seconds,
+        ROW_NUMBER() OVER (PARTITION BY GI.Video_Title ORDER BY GI.Channel_Created DESC) AS RowNum
+    FROM
+        GP_Influencers GI
+    JOIN GP_Videos GV ON GI.Video_Title = GV.Video_Title
+    WHERE
+        GI.Total_Subscribers > 100000
+)
+SELECT
+    Video_Title,
+    Creator_Name,
+    Creator_Gender,
+    Total_Subscribers,
+    AVG(Duration_Seconds) AS AvgVideoLength
+FROM
+    RankedChannels
+WHERE
+    RowNum = 1
+GROUP BY
+    Video_Title, Creator_Name, Creator_Gender, Total_Subscribers;
 
 -- Question 8 [Collin]
 
