@@ -127,7 +127,58 @@ begin
 end;
 
 
--- Question 2
+-- Question 2 [Alexis]
+
+create or replace function high_sub return varchar2 is
+    v_creator_name varchar2(255);
+    highest_subcount number;
+    
+begin 
+    select
+        max(total_subscribers)
+    into
+        highest_subcount
+    from 
+        gp_influencers;
+        
+    select creator_name
+    into v_creator_name
+    from gp_influencers
+    where total_subscribers = highest_subcount and rownum = 1;
+    
+    return v_creator_name || ' has the highest subscriber count of: ' || highest_subcount;
+end;
+    
+create or replace function low_sub return varchar2 is
+    v_creator_name varchar2(255);
+    lowest_subcount number;
+    
+begin 
+    select
+        min(total_subscribers)
+    into
+        lowest_subcount
+    from 
+        gp_influencers;
+        
+    select creator_name
+    into v_creator_name
+    from gp_influencers
+    where total_subscribers = lowest_subcount and rownum = 1;
+    
+    return v_creator_name || ' has the lowest subscriber count of: ' || lowest_subcount;
+end;
+
+declare
+    high_res varchar2(2500);
+    low_res varchar2(2500);
+begin
+    high_res := high_sub();
+    dbms_output.put_line(high_sub);
+    
+    low_res := low_sub();
+    dbms_output.put_line(low_sub);
+end;
 
 -- Question 3
 
