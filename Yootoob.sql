@@ -180,7 +180,85 @@ begin
     dbms_output.put_line(low_sub);
 end;
 
--- Question 3
+-- Question 3 [Sean]
+
+CREATE OR REPLACE PROCEDURE Get_Average_Popularity_Measurements (p_comparison IN VARCHAR2, p_duration IN NUMBER)
+AS
+    -- Define variables.
+    v_total_views NUMBER := 0;
+    v_total_likes NUMBER := 0;
+    v_total_comments NUMBER := 0;
+    v_total_videos NUMBER := 0;
+    
+    v_average_views NUMBER;
+    v_average_likes NUMBER;
+    v_average_comments NUMBER;
+    
+    -- Define cursors.
+    CURSOR c_videos_greater IS
+        SELECT GP_Videos.Video_Title, GP_Videos.Total_Views, GP_Interactions.Total_Likes, GP_Interactions.Total_Comments
+        FROM GP_Videos INNER JOIN GP_Interactions
+            ON GP_Videos.Video_Title = GP_Interactions.Video_Title
+        WHERE Duration_Seconds >= p_duration;
+    
+    CURSOR c_videos_less IS
+        SELECT GP_Videos.Video_Title, GP_Videos.Total_Views, GP_Interactions.Total_Likes, GP_Interactions.Total_Comments
+        FROM GP_Videos INNER JOIN GP_Interactions
+            ON GP_Videos.Video_Title = GP_Interactions.Video_Title
+        WHERE Duration_Seconds <= p_duration;
+BEGIN
+    -- Loop through c_videos_greater if the user specifies the "greater" comparison.
+    IF LOWER(p_comparison) = 'greater' THEN
+        FOR video IN c_videos_greater LOOP
+            -- Add the current videos's views, likes, and comments to the totals and increment the amount of videos taken into consideration thus far.
+            v_total_views := v_total_views + video.Total_Views;
+            v_total_likes := v_total_likes + video.Total_Likes;
+            v_total_comments := v_total_comments + video.Total_Comments;
+            
+            v_total_videos := v_total_videos + 1;
+        END LOOP;
+        
+        -- Check if the cursor was empty.
+        IF v_total_videos != 0 THEN
+            -- Calculate and print the average numbers of views, likes, and comments.
+            v_average_views := ROUND((v_total_views / v_total_videos), 0);
+            v_average_likes := ROUND((v_total_likes / v_total_videos), 0);
+            v_average_comments := ROUND((v_total_comments / v_total_videos), 0);
+    
+            DBMS_OUTPUT.PUT_LINE('Influencers with average video durations of ' || p_duration || ' seconds or greater have ' || v_average_views || ' views, ' || v_average_likes || ' likes, and ' || v_average_comments || ' comments on average.');
+        ELSE
+            -- Print an error if the cursor was empty.
+            DBMS_OUTPUT.PUT_LINE('ERROR: There are no videos that match the given criteria.');
+        END IF;
+    -- Loop through c_videos_less if the user specifies the "less" comparison.
+    ELSIF LOWER(p_comparison) = 'less' THEN
+        FOR video IN c_videos_less LOOP
+            -- Add the current video's views, likes, and comments to the totals and increment the amount of videos taken into consideration thus far.
+            v_total_views := v_total_views + video.Total_Views;
+            v_total_likes := v_total_likes + video.Total_Likes;
+            v_total_comments := v_total_comments + video.Total_Comments;
+            
+            v_total_videos := v_total_videos + 1;
+        END LOOP;
+        
+        -- Check if the cursor was empty.
+        IF v_total_videos != 0 THEN
+            -- Calculate and print the average numbers of views, likes, and comments.
+            v_average_views := ROUND((v_total_views / v_total_videos), 0);
+            v_average_likes := ROUND((v_total_likes / v_total_videos), 0);
+            v_average_comments := ROUND((v_total_comments / v_total_videos), 0);
+            
+            DBMS_OUTPUT.PUT_LINE('Influencers with average video durations of ' || p_duration || ' seconds or less have ' || v_average_views || ' views, ' || v_average_likes || ' likes, and ' || v_average_comments || ' comments on average.');
+        ELSE
+            -- Print an error if the cursor was empty.
+            DBMS_OUTPUT.PUT_LINE('ERROR: There are no videos that match the given criteria.');
+        END IF;
+    -- Print an error message if the comparison argument is not recognized.
+    ELSE
+        DBMS_OUTPUT.PUT_LINE('ERROR: Comparison argument not recognized. Please enter "greater" or "less" as the comparison argument.');
+    END IF;
+END Get_Average_Popularity_Measurements;
+/
 
 -- Question 4 [Sean]
 
@@ -189,6 +267,7 @@ AS
     -- Define variables.
     v_total_subscribers NUMBER := 0;
     v_total_creators NUMBER := 0;
+    
     v_average_subscribers NUMBER;
     
     -- Define cursors.
@@ -209,6 +288,7 @@ BEGIN
         FOR creator IN c_creators_greater LOOP
             -- Add the current creator's subscribers to the total and increment the amount of subscribers taken into consideration thus far.
             v_total_subscribers := v_total_subscribers + creator.Total_Subscribers;
+            
             v_total_creators := v_total_creators + 1;
         END LOOP;
         
@@ -227,6 +307,7 @@ BEGIN
         FOR creator IN c_creators_less LOOP
             -- Add the current creator's subscribers to the total and increment the amount of subscribers taken into consideration thus far.
             v_total_subscribers := v_total_subscribers + creator.Total_Subscribers;
+            
             v_total_creators := v_total_creators + 1;
         END LOOP;
         
@@ -245,12 +326,6 @@ BEGIN
         DBMS_OUTPUT.PUT_LINE('ERROR: Comparison argument not recognized. Please enter "greater" or "less" as the comparison argument.');
     END IF;
 END Get_Average_Subscribers;
-/
-
-BEGIN
-    Get_Average_Subscribers('greater', 600);
-    Get_Average_Subscribers('less', 120);
-END;
 /
 
 -- Question 5 
