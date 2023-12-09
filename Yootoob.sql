@@ -402,8 +402,30 @@ BEGIN
 END CalculateTotalViewsByDuration;
 /
 
--- Question 9
+-- Question 9 [Collin]
+    
+CREATE OR REPLACE PROCEDURE CalculateAverageVideoLength AS
+    v_more_than_500k_avg_duration NUMBER;
+    v_less_than_or_equal_500k_avg_duration NUMBER;
+BEGIN
 
+    SELECT AVG(Duration_Seconds)
+    INTO v_more_than_500k_avg_duration
+    FROM GP_Videos
+    WHERE Total_Views > 500000;
+
+
+    SELECT AVG(Duration_Seconds)
+    INTO v_less_than_or_equal_500k_avg_duration
+    FROM GP_Videos
+    WHERE Total_Views <= 500000;
+
+
+    DBMS_OUTPUT.PUT_LINE('Average Video Length for Videos with More Than 500,000 Views: ' || v_more_than_500k_avg_duration || ' seconds');
+    DBMS_OUTPUT.PUT_LINE('Average Video Length for Videos with Less Than or Equal to 500,000 Views: ' || v_less_than_or_equal_500k_avg_duration || ' seconds');
+END CalculateAverageVideoLength;
+/
+    
 -- Question 10 [Natsu]
 
 create or replace procedure count_hashtags 
