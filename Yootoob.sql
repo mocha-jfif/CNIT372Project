@@ -339,17 +339,23 @@ AS
 BEGIN
     FOR ChannelInfo IN (
         SELECT
-            GI.Creator_Name,
-            GI.Total_Subscribers,
-            AVG(GV.Duration_Seconds) AS AvgVideoLength
-        FROM
-            GP_Influencers GI
-        JOIN GP_Videos GV ON GI.Video_Title = GV.Video_Title
+            Creator_Name,
+            Total_Subscribers,
+            AvgVideoLength
+        FROM (
+            SELECT
+                GI.Creator_Name,
+                GI.Total_Subscribers,
+                AVG(GV.Duration_Seconds) OVER (PARTITION BY GI.Video_Title) AS AvgVideoLength,
+                RANK() OVER (PARTITION BY GI.Video_Title ORDER BY GI.Channel_Created DESC) AS rnk
+            FROM
+                GP_Influencers GI
+            JOIN GP_Videos GV ON GI.Video_Title = GV.Video_Title
+            WHERE
+                GI.Total_Subscribers > 100000
+        )
         WHERE
-            GI.Total_Subscribers > 100000
-            AND ROW_NUMBER() OVER (PARTITION BY GI.Video_Title ORDER BY GI.Channel_Created DESC) = 1
-        GROUP BY
-            GI.Creator_Name, GI.Total_Subscribers
+            rnk = 1
     )
     LOOP
         DBMS_OUTPUT.PUT_LINE('Creator Name: ' || ChannelInfo.Creator_Name);
