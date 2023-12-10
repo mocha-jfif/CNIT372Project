@@ -329,6 +329,44 @@ END Get_Average_Subscribers;
 
 -- Question 5 
 
+create or replace procedure video_date
+is
+
+begin
+      DBMS_OUTPUT.PUT_LINE('Video upload date for short videos');
+      DBMS_OUTPUT.PUT_LINE('----------------------------------');
+      FOR vid IN (
+      SELECT
+         date_uploaded
+      FROM (
+        SELECT
+            date_uploaded
+        FROM gp_videos
+        where duration_seconds < 60
+      ) subquery
+   ) 
+   LOOP
+      DBMS_OUTPUT.PUT_LINE('Creation date: ' || vid.date_uploaded);
+   END LOOP;
+   
+   DBMS_OUTPUT.PUT_LINE(' ');
+   DBMS_OUTPUT.PUT_LINE('Video upload date for long videos');
+   DBMS_OUTPUT.PUT_LINE('----------------------------------');
+   FOR vid IN (
+      SELECT
+         date_uploaded
+      FROM (
+        SELECT
+            date_uploaded
+        FROM gp_videos
+        where duration_seconds > 60
+      ) subquery
+   ) 
+   LOOP
+      DBMS_OUTPUT.PUT_LINE('Creation date: ' || vid.date_uploaded);
+   END LOOP;
+end;
+
 -- Question 6
 
 -- Question 7 [Collin]
