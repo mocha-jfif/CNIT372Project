@@ -369,6 +369,22 @@ end;
 
 -- Question 6
 
+create or replace procedure subscribed_channels
+is
+    subscriber_count NUMBER;
+
+begin
+    
+    select max(total_subscribers)
+    into subscriber_count
+    from gp_influencers join gp_videos on gp_influencers.video_title = gp_videos.video_title
+    where duration_seconds between 120 and 420;
+    
+    DBMS_OUTPUT.PUT_LINE('Number of Subscribers: ' || subscriber_count);
+
+   
+end;
+
 -- Question 7 [Collin]
     
 CREATE OR REPLACE PROCEDURE FindNewChannelsWithSubscribers
