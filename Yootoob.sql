@@ -359,7 +359,7 @@ begin
         SELECT
             date_uploaded
         FROM gp_videos
-        where duration_seconds > 60
+        where duration_seconds > 600
       ) subquery
    ) 
    LOOP
