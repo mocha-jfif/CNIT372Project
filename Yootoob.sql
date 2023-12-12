@@ -372,6 +372,7 @@ end;
 create or replace procedure subscribed_channels
 is
     subscriber_count NUMBER;
+    creatorname VARCHAR2(64);
 
 begin
     
@@ -380,10 +381,17 @@ begin
     from gp_influencers join gp_videos on gp_influencers.video_title = gp_videos.video_title
     where duration_seconds between 120 and 420;
     
+    select creator_name
+    into creatorname
+    from gp_influencers join gp_videos on gp_influencers.video_title = gp_videos.video_title
+    where total_subscribers = subscriber_count and rownum = 1;
+    
+    DBMS_OUTPUT.PUT_LINE('Creator name: ' || creatorname);
     DBMS_OUTPUT.PUT_LINE('Number of Subscribers: ' || subscriber_count);
 
    
 end;
+
 
 -- Question 7 [Collin]
     
