@@ -331,40 +331,33 @@ END Get_Average_Subscribers;
 
 create or replace procedure video_date
 is
-
+    year varchar2(4);
 begin
-      DBMS_OUTPUT.PUT_LINE('Video upload date for short videos');
+      DBMS_OUTPUT.PUT_LINE('Video upload years for short videos');
       DBMS_OUTPUT.PUT_LINE('----------------------------------');
       FOR vid IN (
-      SELECT
-         date_uploaded
-      FROM (
-        SELECT
-            date_uploaded
-        FROM gp_videos
-        where duration_seconds < 60
-      ) subquery
-   ) 
+      select to_char(date_uploaded, 'YYYY') as v, count(to_char(date_uploaded, 'YYYY')) as s
+       from gp_videos
+       where duration_seconds < 60
+       group by to_char(date_uploaded, 'YYYY')) 
    LOOP
-      DBMS_OUTPUT.PUT_LINE('Creation date: ' || vid.date_uploaded);
+      DBMS_OUTPUT.PUT_LINE('Year uploaded: ' || vid.v|| ' ' || 'Number of videos: ' || vid.s);
    END LOOP;
    
    DBMS_OUTPUT.PUT_LINE(' ');
-   DBMS_OUTPUT.PUT_LINE('Video upload date for long videos');
+   DBMS_OUTPUT.PUT_LINE('Video upload years for long videos');
    DBMS_OUTPUT.PUT_LINE('----------------------------------');
-   FOR vid IN (
-      SELECT
-         date_uploaded
-      FROM (
-        SELECT
-            date_uploaded
-        FROM gp_videos
-        where duration_seconds > 600
-      ) subquery
-   ) 
-   LOOP
-      DBMS_OUTPUT.PUT_LINE('Creation date: ' || vid.date_uploaded);
-   END LOOP;
+   
+   FOR vid in 
+       (
+       select to_char(date_uploaded, 'YYYY') as v, count(to_char(date_uploaded, 'YYYY')) as l
+       from gp_videos
+       where duration_seconds > 600
+       group by to_char(date_uploaded, 'YYYY'))
+    LOOP
+        DBMS_OUTPUT.PUT_LINE('Year uploaded: ' || vid.v || ' ' || 'Number of videos: ' || vid.l);
+    END LOOP;
+   
 end;
 
 -- Question 6
