@@ -331,14 +331,13 @@ END Get_Average_Subscribers;
 
 create or replace procedure video_date
 is
-    year varchar2(4);
 begin
       DBMS_OUTPUT.PUT_LINE('Video upload years for short videos');
       DBMS_OUTPUT.PUT_LINE('----------------------------------');
       FOR vid IN (
       select to_char(date_uploaded, 'YYYY') as v, count(to_char(date_uploaded, 'YYYY')) as s
        from gp_videos
-       where duration_seconds < 60
+       where duration_seconds <= 60
        group by to_char(date_uploaded, 'YYYY')) 
    LOOP
       DBMS_OUTPUT.PUT_LINE('Year uploaded: ' || vid.v|| ' ' || 'Number of videos: ' || vid.s);
@@ -352,13 +351,14 @@ begin
        (
        select to_char(date_uploaded, 'YYYY') as v, count(to_char(date_uploaded, 'YYYY')) as l
        from gp_videos
-       where duration_seconds > 600
+       where duration_seconds >= 600
        group by to_char(date_uploaded, 'YYYY'))
     LOOP
         DBMS_OUTPUT.PUT_LINE('Year uploaded: ' || vid.v || ' ' || 'Number of videos: ' || vid.l);
     END LOOP;
    
 end;
+
 
 -- Question 6
 
