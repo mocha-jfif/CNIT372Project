@@ -473,40 +473,31 @@ END CalculateAverageVideoLength;
 
 create or replace procedure count_hashtags 
 is
+    hashtag_count NUMBER;
+    low_hashtag_count NUMBER;
 
 begin
-      DBMS_OUTPUT.PUT_LINE('Videos with over 500,000 views');
-      DBMS_OUTPUT.PUT_LINE('-------------------------------');
-      FOR vid IN (
-      SELECT
-         video_title, total_views, total_hashtags
-      FROM (
-        SELECT
-            video_title, total_views, total_hashtags
-        FROM gp_videos
-        where total_views >= 500000
-      ) subquery
-   ) 
-   LOOP
-      DBMS_OUTPUT.PUT_LINE('Video title: ' || vid.video_title || ' Number of views: ' || vid.total_views
-      || ' Total Hashtags: ' || vid.total_hashtags);
-   END LOOP;
+    DBMS_OUTPUT.PUT_LINE('Videos with over 500,000 views');
+    DBMS_OUTPUT.PUT_LINE('-------------------------------');
+    
+    select avg(total_hashtags)
+    into hashtag_count
+    from gp_videos
+    where total_views > 500000;
+    
+    DBMS_OUTPUT.PUT_LINE(hashtag_count);
+      
    
    DBMS_OUTPUT.PUT_LINE(' ');
    DBMS_OUTPUT.PUT_LINE('Videos with under 500,000 views');
    DBMS_OUTPUT.PUT_LINE('-------------------------------');
-   FOR vid IN (
-      SELECT
-         video_title, total_views, total_hashtags
-      FROM (
-        SELECT
-            video_title, total_views, total_hashtags
-        FROM gp_videos
-        where total_views < 500000
-      ) subquery
-   ) 
-   LOOP
-      DBMS_OUTPUT.PUT_LINE('Video title: ' || vid.video_title || ' Number of views: ' || vid.total_views
-      || ' Total Hashtags: ' || vid.total_hashtags);
-   END LOOP;
+   
+   select avg(total_hashtags)
+   into low_hashtag_count
+   from gp_videos
+   where total_views <= 500000;
+   
+   DBMS_OUTPUT.PUT_LINE(low_hashtag_count);
+   
 end;
+    
