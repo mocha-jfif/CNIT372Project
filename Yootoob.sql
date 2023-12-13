@@ -337,7 +337,7 @@ begin
       FOR vid IN (
       select to_char(date_uploaded, 'YYYY') as v, count(to_char(date_uploaded, 'YYYY')) as s
        from gp_videos
-       where duration_seconds <= 60
+       where duration_seconds <= 120
        group by to_char(date_uploaded, 'YYYY')) 
    LOOP
       DBMS_OUTPUT.PUT_LINE('Year uploaded: ' || vid.v|| ' ' || 'Number of videos: ' || vid.s);
@@ -358,6 +358,7 @@ begin
     END LOOP;
    
 end;
+
 
 
 -- Question 6
