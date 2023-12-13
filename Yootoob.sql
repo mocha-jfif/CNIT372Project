@@ -29,6 +29,7 @@ CREATE TABLE GP_Influencers (
     Total_Views NUMBER,
     Total_Videos NUMBER,
     Total_Playlists NUMBER,
+    Channel_Created DATE,
     
     PRIMARY KEY (Video_Title)
 );
