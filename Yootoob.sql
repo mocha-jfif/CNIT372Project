@@ -374,7 +374,7 @@ begin
     into subscriber_count
     from gp_influencers join gp_videos on gp_influencers.video_title = gp_videos.video_title
     group by total_subscribers
-    having avg(duration_seconds) between 120 and 420
+    having avg(duration_seconds) between 121 and 599
     order by total_subscribers desc
     fetch first 1 row only;
     
@@ -383,13 +383,35 @@ begin
     from gp_influencers join gp_videos on gp_influencers.video_title = gp_videos.video_title
     where total_subscribers = subscriber_count and rownum = 1
     group by creator_name
-    having avg(duration_seconds) between 120 and 420;
+    having avg(duration_seconds) between 121 and 599;
     
     DBMS_OUTPUT.PUT_LINE('Creator name: ' || creatorname);
     DBMS_OUTPUT.PUT_LINE('Number of Subscribers: ' || subscriber_count);
 
    
 end;
+
+create table gp_videos_copy as select * from gp_videos;
+
+CREATE OR REPLACE TRIGGER GP_PROJECT_INSERT_TRIGGER
+    AFTER UPDATE ON GP_VIDEOS_COPY
+BEGIN
+    DBMS_OUTPUT.PUT_LINE('Table Updated.');
+END;
+
+alter table gp_videos_copy add video_form VARCHAR2(20);
+
+update gp_videos_copy
+set video_form = 'short'
+where duration_seconds <= 120;
+
+update gp_videos_copy
+set video_form = 'long'
+where duration_seconds >= 600;
+
+update gp_videos_copy
+set video_form = 'intermediate'
+where duration_seconds between 121 and 599;
 
 
 -- Question 7 [Collin]
@@ -523,4 +545,14 @@ begin
    DBMS_OUTPUT.PUT_LINE(low_hashtag_count);
    
 end;
-    
+
+
+create table gp_videos_copy as select * from gp_videos;
+
+CREATE OR REPLACE TRIGGER GP_PROJECT_INSERT
+    AFTER INSERT ON GP_VIDEOS
+    FOR EACH ROW
+BEGIN
+    DBMS_OUTPUT.PUT_LINE('Table Updated.');
+END;
+
