@@ -369,15 +369,20 @@ is
 
 begin
     
-    select max(total_subscribers)
+    select total_subscribers
     into subscriber_count
     from gp_influencers join gp_videos on gp_influencers.video_title = gp_videos.video_title
-    where duration_seconds between 120 and 420;
+    group by total_subscribers
+    having avg(duration_seconds) between 120 and 420
+    order by total_subscribers desc
+    fetch first 1 row only;
     
     select creator_name
     into creatorname
     from gp_influencers join gp_videos on gp_influencers.video_title = gp_videos.video_title
-    where total_subscribers = subscriber_count and rownum = 1;
+    where total_subscribers = subscriber_count and rownum = 1
+    group by creator_name
+    having avg(duration_seconds) between 120 and 420;
     
     DBMS_OUTPUT.PUT_LINE('Creator name: ' || creatorname);
     DBMS_OUTPUT.PUT_LINE('Number of Subscribers: ' || subscriber_count);
