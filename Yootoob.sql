@@ -546,13 +546,3 @@ begin
    
 end;
 
-
-create table gp_videos_copy as select * from gp_videos;
-
-CREATE OR REPLACE TRIGGER GP_PROJECT_INSERT
-    AFTER INSERT ON GP_VIDEOS
-    FOR EACH ROW
-BEGIN
-    DBMS_OUTPUT.PUT_LINE('Table Updated.');
-END;
-
