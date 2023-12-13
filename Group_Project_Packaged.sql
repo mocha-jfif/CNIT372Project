@@ -65,13 +65,13 @@ AS
     PROCEDURE subscribed_channels;
     
     -- Question 7 [Collin]
-    
+    PROCEDURE FindNewChannelsWithSubscribers;
     
     -- Question 8 [Collin]
-    
+    PROCEDURE CalculateTotalViewsByDuration;
     
     -- Question 9 [Collin]
-    
+    PROCEDURE CalculateAverageVideoLength;
     
     -- Question 10 [Natsu]
     PROCEDURE count_hashtags;
@@ -79,7 +79,13 @@ END YouTube_Analysis;
 /
 
 CREATE OR REPLACE PACKAGE BODY YouTube_Analysis
-AS  
+AS
+    -- Question 1 [Alexis]
+    
+    
+    -- Question 2 [Alexis]
+    
+    
     -- Question 3 [Sean]
     PROCEDURE Get_Average_Popularity_Measurements (p_comparison IN VARCHAR2, p_duration IN NUMBER)
     AS
@@ -285,13 +291,98 @@ AS
     end;
     
     -- Question 7 [Collin]
-    
+    PROCEDURE FindNewChannelsWithSubscribers
+    AS
+    BEGIN
+        FOR ChannelInfo IN (
+            SELECT
+                Creator_Name,
+                Total_Subscribers,
+                AvgVideoLength
+            FROM (
+                SELECT
+                    GI.Creator_Name,
+                    GI.Total_Subscribers,
+                    AVG(GV.Duration_Seconds) OVER (PARTITION BY GI.Video_Title) AS AvgVideoLength,
+                    RANK() OVER (PARTITION BY GI.Video_Title ORDER BY GI.Video_Title DESC) AS rnk
+                FROM
+                    GP_Influencers GI
+                JOIN GP_Videos GV ON GI.Video_Title = GV.Video_Title
+                WHERE
+                    GI.Total_Subscribers > 100000
+            )
+            WHERE
+                rnk = 1
+        )
+        LOOP
+            DBMS_OUTPUT.PUT_LINE('Creator Name: ' || ChannelInfo.Creator_Name);
+            DBMS_OUTPUT.PUT_LINE('Total Subscribers: ' || ChannelInfo.Total_Subscribers);
+            DBMS_OUTPUT.PUT_LINE('Average Video Length: ' || ChannelInfo.AvgVideoLength);
+            DBMS_OUTPUT.PUT_LINE('-----------------------');
+        END LOOP;
+    END FindNewChannelsWithSubscribers;
     
     -- Question 8 [Collin]
+    PROCEDURE CalculateTotalViewsByDuration
+    AS
+        vShortFormViews NUMBER := 0;
+        vLongFormViews NUMBER := 0;
+    BEGIN
     
+        SELECT
+            NVL(SUM(GV.Total_Views), 0)
+        INTO
+            vShortFormViews
+        FROM
+            GP_Videos GV
+        WHERE
+            GV.Duration_Seconds < 120;
+    
+    
+        SELECT
+            NVL(SUM(GV.Total_Views), 0)
+        INTO
+            vLongFormViews
+        FROM
+            GP_Videos GV
+        WHERE
+            GV.Duration_Seconds > 600;
+    
+    
+        DBMS_OUTPUT.PUT_LINE('Total Views for Short Form Content: ' || vShortFormViews);
+        DBMS_OUTPUT.PUT_LINE('Total Views for Long Form Content: ' || vLongFormViews);
+    
+    
+        IF vShortFormViews > vLongFormViews THEN
+            DBMS_OUTPUT.PUT_LINE('Short Form Content has a higher total number of views.');
+        ELSIF vLongFormViews > vShortFormViews THEN
+            DBMS_OUTPUT.PUT_LINE('Long Form Content has a higher total number of views.');
+        ELSE
+            DBMS_OUTPUT.PUT_LINE('Short Form and Long Form Content have the same total number of views.');
+        END IF;
+    END CalculateTotalViewsByDuration;
     
     -- Question 9 [Collin]
+    PROCEDURE CalculateAverageVideoLength AS
+        v_more_than_500k_avg_duration NUMBER;
+        v_less_than_or_equal_500k_avg_duration NUMBER;
+    BEGIN
     
+        SELECT AVG(Duration_Seconds)
+        INTO v_more_than_500k_avg_duration
+        FROM GP_Videos
+        WHERE Total_Views > 500000;
+    
+    
+        SELECT AVG(Duration_Seconds)
+        INTO v_less_than_or_equal_500k_avg_duration
+        FROM GP_Videos
+        WHERE Total_Views <= 500000;
+    
+    
+        DBMS_OUTPUT.PUT_LINE('Average Video Length for Videos with More Than 500,000 Views: ' || v_more_than_500k_avg_duration || ' seconds');
+        DBMS_OUTPUT.PUT_LINE('Average Video Length for Videos with Less Than or Equal to 500,000 Views: ' || v_less_than_or_equal_500k_avg_duration || ' seconds');
+    END CalculateAverageVideoLength;
     
     -- Question 10 [Natsu]
     procedure count_hashtags 
