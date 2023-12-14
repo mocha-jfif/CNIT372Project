@@ -1,10 +1,10 @@
 -- Let's begin!
 
 -- Drop tables.
-
 DROP TABLE GP_Videos;
 DROP TABLE GP_Influencers;
 DROP TABLE GP_Interactions;
+DROP TABLE GP_Videos_Copy;
 
 -- Create tables.
 CREATE TABLE GP_Videos (
@@ -44,13 +44,26 @@ CREATE TABLE GP_Interactions (
     PRIMARY KEY (Video_Title)
 );
 
+create table gp_videos_copy as select * from gp_videos;
+
+alter table gp_videos_copy add video_form VARCHAR2(20);
+
+-- Create triggers.
+CREATE OR REPLACE TRIGGER GP_PROJECT_INSERT_TRIGGER
+    AFTER UPDATE ON GP_VIDEOS_COPY
+BEGIN
+    DBMS_OUTPUT.PUT_LINE('Table Updated.');
+END;
+/
+
+-- Create package specification.
 CREATE OR REPLACE PACKAGE YouTube_Analysis
 AS
     -- Question 1 [Alexis]
-    
+    PROCEDURE minandmax;
     
     -- Question 2 [Alexis]
-    
+    PROCEDURE highandlowsub;
     
     -- Question 3 [Sean]
     PROCEDURE Get_Average_Popularity_Measurements (p_comparison IN VARCHAR2, p_duration IN NUMBER);
@@ -81,10 +94,136 @@ END YouTube_Analysis;
 CREATE OR REPLACE PACKAGE BODY YouTube_Analysis
 AS
     -- Question 1 [Alexis]
+    function mindur return number is
+        minavgduration number;
+    begin
+        select
+            min(avg(v.duration_seconds))
+        into
+            minavgduration
+        from
+            gp_influencers i
+        join
+            gp_videos v on i.video_title = v.video_title
+        group by
+            i.creator_name;
+        
+        return minavgduration;
+    end;
     
+    function maxdur return number is
+        maxavgduration number;
+    begin
+        select
+            max(avg(v.duration_seconds))
+        into
+            maxavgduration
+        from
+            gp_influencers i
+        join
+            gp_videos v on i.video_title = v.video_title
+        group by
+            i.creator_name;
+        
+        return maxavgduration;
+    end;
+    
+    procedure minandmax is
+        mincreate varchar2(64); 
+        maxcreate varchar2(64); 
+        mindur number;
+        maxdur number;
+        subcountmax number;
+        subcountmin number;
+    begin
+        select max(avgduration), max(creator_name)
+        into maxdur, maxcreate
+        from (
+            select avg(v.duration_seconds) as avgduration, c.creator_name
+            from gp_influencers c
+            join gp_videos v on c.video_title = v.video_title
+            group by c.creator_name
+        );
+    
+        select min(avgduration), min(creator_name)
+        into mindur, mincreate
+        from (
+            select avg(v.duration_seconds) as avgduration, c.creator_name
+            from gp_influencers c
+            join gp_videos v on c.video_title = v.video_title
+            group by c.creator_name
+        );
+        
+        select total_subscribers
+        into subcountmax
+        from gp_influencers
+        where creator_name = maxcreate;
+        
+        select total_subscribers
+        into subcountmin
+        from gp_influencers
+        where creator_name = mincreate;
+    
+        dbms_output.put_line('Influencer with maximum average duration (in seconds): ' || maxcreate);
+        dbms_output.put_line('Average length: ' || maxdur);
+        dbms_output.put_line('Number of subscribers: ' || subcountmax);
+        dbms_output.put_line('- - - - - - - - - - - -');
+        dbms_output.put_line('Influencer with minimum average duration (in seconds): ' || mincreate);
+        dbms_output.put_line('Average length: ' || mindur);
+        dbms_output.put_line('Number of subscribers: ' || subcountmin);
+    end;
     
     -- Question 2 [Alexis]
+    function high_sub return varchar2 is
+        v_creator_name varchar2(255);
+        highest_subcount number;
+        
+    begin 
+        select
+            max(total_subscribers)
+        into
+            highest_subcount
+        from 
+            gp_influencers;
+            
+        select creator_name
+        into v_creator_name
+        from gp_influencers
+        where total_subscribers = highest_subcount and rownum = 1;
+        
+        return v_creator_name || ' has the highest subscriber count of: ' || highest_subcount;
+    end;
+        
+    function low_sub return varchar2 is
+        v_creator_name varchar2(255);
+        lowest_subcount number;
+        
+    begin 
+        select
+            min(total_subscribers)
+        into
+            lowest_subcount
+        from 
+            gp_influencers;
+            
+        select creator_name
+        into v_creator_name
+        from gp_influencers
+        where total_subscribers = lowest_subcount and rownum = 1;
+        
+        return v_creator_name || ' has the lowest subscriber count of: ' || lowest_subcount;
+    end;
     
+    procedure highandlowsub is
+        high_res varchar2(2500);
+        low_res varchar2(2500);
+    begin
+        high_res := high_sub();
+        dbms_output.put_line(high_sub);
+        
+        low_res := low_sub();
+        dbms_output.put_line(low_sub);
+    end;
     
     -- Question 3 [Sean]
     PROCEDURE Get_Average_Popularity_Measurements (p_comparison IN VARCHAR2, p_duration IN NUMBER)
@@ -287,7 +426,17 @@ AS
         DBMS_OUTPUT.PUT_LINE('Creator name: ' || creatorname);
         DBMS_OUTPUT.PUT_LINE('Number of Subscribers: ' || subscriber_count);
     
-       
+        update gp_videos_copy
+        set video_form = 'short'
+        where duration_seconds <= 120;
+        
+        update gp_videos_copy
+        set video_form = 'long'
+        where duration_seconds >= 600;
+        
+        update gp_videos_copy
+        set video_form = 'intermediate'
+        where duration_seconds between 121 and 599;
     end;
     
     -- Question 7 [Collin]
